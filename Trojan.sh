@@ -108,6 +108,7 @@ fi
 $systemPackage -y install  nginx wget unzip zip curl tar >/dev/null 2>&1
 systemctl enable nginx.service
 green "======================="
+yellow "请先在hosts添加域名解析到公网IP"
 yellow "请输入绑定到本VPS的域名"
 green "======================="
 read your_domain
@@ -154,23 +155,27 @@ EOF
 	systemctl restart nginx.service
 	#申请https证书
 	mkdir /usr/src/trojan-cert
-	curl https://get.acme.sh | sh
-	~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
-	~/.acme.sh/acme.sh  --issue  -d $your_domain  --webroot /usr/share/nginx/html/
-    	~/.acme.sh/acme.sh  --installcert  -d  $your_domain   \
-        --key-file   /usr/src/trojan-cert/private.key \
-        --fullchain-file /usr/src/trojan-cert/fullchain.cer \
-        --reloadcmd  "systemctl force-reload  nginx.service"
+    cd /usr/src/trojan-cert
+    openssl genrsa -out private.key 1024
+    openssl req -new -x509 -key private.key -out fullchain.cer -days 3650 -subj /CN=www.daty214.tk
+	# curl https://get.acme.sh | sh
+	# ~/.acme.sh/acme.sh --set-default-ca --server letsencrypt
+	# ~/.acme.sh/acme.sh  --issue  -d $your_domain  --webroot /usr/share/nginx/html/
+    # 	~/.acme.sh/acme.sh  --installcert  -d  $your_domain   \
+    #     --key-file   /usr/src/trojan-cert/private.key \
+    #     --fullchain-file /usr/src/trojan-cert/fullchain.cer \
+    #     --reloadcmd  "systemctl force-reload  nginx.service"
 	if test -s /usr/src/trojan-cert/fullchain.cer; then
         cd /usr/src
 	#wget https://github.com/trojan-gfw/trojan/releases/download/v1.13.0/trojan-1.13.0-linux-amd64.tar.xz
-	wget https://github.com/trojan-gfw/trojan/releases/download/v1.14.0/trojan-1.14.0-linux-amd64.tar.xz
+	wget https://github.com/trojan-gfw/trojan/releases/download/v1.16.0/trojan-1.16.0-linux-amd64.tar.xz
 	tar xf trojan-1.*
 	#下载trojan客户端
 	wget https://github.com/atrandys/trojan/raw/master/trojan-cli.zip
 	unzip trojan-cli.zip
 	cp /usr/src/trojan-cert/fullchain.cer /usr/src/trojan-cli/fullchain.cer
-	trojan_passwd=$(cat /dev/urandom | head -1 | md5sum | head -c 8)
+	# trojan_passwd=$(cat /dev/urandom | head -1 | md5sum | head -c 8)
+    trojan_passwd="5ec8c7d9"
 	cat > /usr/src/trojan-cli/config.json <<-EOF
 {
     "run_type": "client",
@@ -183,7 +188,7 @@ EOF
     ],
     "log_level": 1,
     "ssl": {
-        "verify": true,
+        "verify": false,
         "verify_hostname": true,
         "cert": "fullchain.cer",
         "cipher_tls13":"TLS_AES_128_GCM_SHA256:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_256_GCM_SHA384",
