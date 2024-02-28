@@ -16,8 +16,8 @@ Youtube：波仔分享
 
 脚本安装命令
 
-bash <(curl -s -L https://github.com/daty2141/Trojan/raw/master/Trojan.sh)
+bash <(curl -s -L https://github.com/daty2141/mytrojan/raw/master/Trojan.sh)
 
-curl -O https://raw.githubusercontent.com/daty2141/Trojan/master/Trojan.sh && chmod +x Trojan.sh && ./Trojan.sh
+curl -O https://raw.githubusercontent.com/daty2141/mytrojan/master/Trojan.sh && chmod +x Trojan.sh && ./Trojan.sh
 
-wget --no-check-certificate https://github.com/daty2141/Trojan/raw/master/Trojan.sh && chmod +x Trojan.sh && ./Trojan.sh
+wget --no-check-certificate https://github.com/daty2141/mytrojan/raw/master/Trojan.sh && chmod +x Trojan.sh && ./Trojan.sh
