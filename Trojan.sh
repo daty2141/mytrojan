@@ -108,7 +108,7 @@ fi
 $systemPackage -y install  nginx wget unzip zip curl tar >/dev/null 2>&1
 systemctl enable nginx.service
 green "======================="
-yellow "请先在hosts添加域名解析到公网IP"
+yellow "请先在/etc/hosts添加域名解析到公网IP"
 yellow "请输入绑定到本VPS的域名"
 green "======================="
 read your_domain
@@ -174,14 +174,13 @@ EOF
 	wget https://github.com/daty2141/mytrojan/raw/master/trojan-cli.zip
 	unzip trojan-cli.zip
 	cp /usr/src/trojan-cert/fullchain.cer /usr/src/trojan-cli/fullchain.cer
-	# trojan_passwd=$(cat /dev/urandom | head -1 | md5sum | head -c 8)
-    trojan_passwd="5ec8c7d9"
+	trojan_passwd=$(cat /dev/urandom | head -1 | md5sum | head -c 8)
 	cat > /usr/src/trojan-cli/config.json <<-EOF
 {
     "run_type": "client",
     "local_addr": "127.0.0.1",
-    "local_port": 1080,
-    "remote_addr": "$your_domain",
+    "local_port": 10800,
+    "remote_addr": "$real_addr",
     "remote_port": 443,
     "password": [
         "$trojan_passwd"
@@ -283,9 +282,10 @@ EOF
 	green "======================================================================"
 	green "Trojan已安装完成，请使用以下链接下载trojan客户端，此客户端已配置好所有参数"
 	green "1、复制下面的链接，在浏览器打开，下载客户端"
-	yellow "http://${your_domain}/$trojan_path/trojan-cli.zip"
+	yellow "http://${real_addr}/$trojan_path/trojan-cli.zip"
 	red "请记录下面规则网址"
-	yellow "http://${your_domain}/trojan.txt"
+	yellow "http://${real_addr}/trojan.txt"
+        yellow "trojan passwd: $trojan_passwd"
 	green "2、将下载的压缩包解压，打开文件夹，打开start.bat即打开并运行Trojan客户端"
 	green "3、打开stop.bat即关闭Trojan客户端"
 	green "4、Trojan客户端需要搭配浏览器插件使用，例如switchyomega等"
